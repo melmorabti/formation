@@ -26,8 +26,8 @@ def show_calendar():
     events = []
     for _, row in sessions_courtes.iterrows():
         try:
-            organisme = row.get("Organisme de formation", "").strip()
-            lieu = row.get("Lieu de formation", "").strip()
+            organisme = str(row.get("Organisme de formation", "") or "").strip()
+            lieu = str(row.get("Lieu de formation", "") or "").strip()
 
             event_title = f"{row['Nom de la formation']}"
             if organisme:
