@@ -8,27 +8,34 @@ import pandas as pd
 def show_calendar():
     st.title("Planning hebdomadaire interactif")
 
-    # Vérifie si les données des sessions existent
     if "session_data" not in st.session_state:
         st.warning("Veuillez d'abord importer les données des sessions.")
         return
 
-    # Charger les données des sessions
+    # Charger les données
     data = st.session_state["session_data"]
 
-    # Convertir les colonnes de dates en datetime
+    # Convertir les dates
     data["Début"] = pd.to_datetime(data["Début"], errors="coerce", format="%d/%m/%Y")
     data["Fin"] = pd.to_datetime(data["Fin"], errors="coerce", format="%d/%m/%Y")
 
-    # Créer des événements pour le calendrier
-    events = []
-    for _, session in data.iterrows():
-        events.append({
-            "title": session["Nom de la formation"],
-            "start": session["Début"].strftime("%Y-%m-%dT%H:%M:%S"),
-            "end": session["Fin"].strftime("%Y-%m-%dT%H:%M:%S"),
-        })
+    # Nettoyer les données : supprimer les lignes avec des champs critiques vides
+    cleaned = data.dropna(subset=["Nom de la formation", "Début", "Fin"])
 
-    # Afficher le calendrier avec les événements
-    calendar(events)
+    # Créer les événements pour le calendrier
+    events = []
+    for _, row in cleaned.iterrows():
+        try:
+            events.append({
+                "title": str(row["Nom de la formation"]),
+                "start": row["Début"].strftime("%Y-%m-%dT%H:%M:%S"),
+                "end": row["Fin"].strftime("%Y-%m-%dT%H:%M:%S")
+            })
+        except Exception as e:
+            st.warning(f"Une session a été ignorée (problème de données) : {e}")
+
+    if not events:
+        st.info("Aucune session valide à afficher dans le calendrier.")
+    else:
+        calendar(events)
 
