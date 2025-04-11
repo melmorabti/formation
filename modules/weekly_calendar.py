@@ -49,6 +49,13 @@ def show_calendar():
             "left": "prev,next today",
             "center": "title",
             "right": "dayGridMonth,timeGridWeek"
+        },
+        "buttonText": {
+            "today": "aujourd’hui",
+            "month": "mois",
+            "week": "semaine",
+            "day": "jour",
+            "list": "liste"
         }
     }
 
