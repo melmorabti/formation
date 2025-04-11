@@ -14,11 +14,14 @@ def show_calendar():
 
     data = st.session_state["session_data"]
 
+    # Conversion des dates
     data["Début"] = pd.to_datetime(data["Début"], errors="coerce", format="%d/%m/%Y")
     data["Fin"] = pd.to_datetime(data["Fin"], errors="coerce", format="%d/%m/%Y")
 
+    # Filtrage des lignes valides
     cleaned = data.dropna(subset=["Nom de la formation", "Début", "Fin"])
 
+    # Construction des événements
     events = []
     for _, row in cleaned.iterrows():
         try:
@@ -30,21 +33,20 @@ def show_calendar():
         except Exception as e:
             st.warning(f"Une session a été ignorée (problème de données) : {e}")
 
-    # Configuration du calendrier en français et commençant le lundi
-options = {
-    "locale": "fr",
-    "firstDay": 1,
-    "initialView": "timeGridWeek",
-    "slotMinTime": "08:00:00",     # Heure de début d'affichage
-    "slotMaxTime": "19:00:00",     # Heure de fin d'affichage
-    "hiddenDays": [0, 6],          # Cache le dimanche (0) et le samedi (6)
-    "headerToolbar": {
-        "left": "prev,next today",
-        "center": "title",
-        "right": "dayGridMonth,timeGridWeek"
+    # Configuration du calendrier
+    options = {
+        "locale": "fr",
+        "firstDay": 1,
+        "initialView": "timeGridWeek",
+        "slotMinTime": "08:00:00",
+        "slotMaxTime": "19:00:00",
+        "hiddenDays": [0, 6],  # Cache dimanche et samedi
+        "headerToolbar": {
+            "left": "prev,next today",
+            "center": "title",
+            "right": "dayGridMonth,timeGridWeek"
+        }
     }
-}
-
 
     if not events:
         st.info("Aucune session valide à afficher dans le calendrier.")
