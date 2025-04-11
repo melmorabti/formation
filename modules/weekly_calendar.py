@@ -31,16 +31,20 @@ def show_calendar():
             st.warning(f"Une session a été ignorée (problème de données) : {e}")
 
     # Configuration du calendrier en français et commençant le lundi
-    options = {
-        "locale": "fr",
-        "firstDay": 1,
-        "initialView": "dayGridWeek",
-        "headerToolbar": {
-            "left": "prev,next today",
-            "center": "title",
-            "right": "dayGridMonth,dayGridWeek"
-        }
+options = {
+    "locale": "fr",
+    "firstDay": 1,
+    "initialView": "timeGridWeek",
+    "slotMinTime": "08:00:00",     # Heure de début d'affichage
+    "slotMaxTime": "19:00:00",     # Heure de fin d'affichage
+    "hiddenDays": [0, 6],          # Cache le dimanche (0) et le samedi (6)
+    "headerToolbar": {
+        "left": "prev,next today",
+        "center": "title",
+        "right": "dayGridMonth,timeGridWeek"
     }
+}
+
 
     if not events:
         st.info("Aucune session valide à afficher dans le calendrier.")
