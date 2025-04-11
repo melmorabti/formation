@@ -29,8 +29,17 @@ def show_calendar():
     events = []
     for _, row in sessions_courtes.iterrows():
         try:
+            organisme = row.get("Organisme de formation", "").strip()
+            lieu = row.get("Lieu de formation", "").strip()
+            
+            event_title = f"{row['Nom de la formation']}"
+            if organisme:
+                event_title += f" - {organisme}"
+            if lieu:
+                event_title += f" @ {lieu}"
+            
             events.append({
-                "title": str(row["Nom de la formation"]),
+                "title": event_title,
                 "start": row["Début"].strftime("%Y-%m-%dT%H:%M:%S"),
                 "end": row["Fin"].strftime("%Y-%m-%dT%H:%M:%S")
             })
