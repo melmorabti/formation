@@ -1,3 +1,6 @@
+# Module: weekly_calendar.py
+# Displays a weekly calendar of training sessions with an interactive calendar.
+
 from streamlit_calendar import calendar
 import streamlit as st
 import pandas as pd
@@ -11,33 +14,27 @@ def show_calendar():
 
     data = st.session_state["session_data"]
 
-    # Conversion des dates
     data["Début"] = pd.to_datetime(data["Début"], errors="coerce", format="%d/%m/%Y")
     data["Fin"] = pd.to_datetime(data["Fin"], errors="coerce", format="%d/%m/%Y")
 
-    # Nettoyage des données essentielles
     cleaned = data.dropna(subset=["Nom de la formation", "Début", "Fin"]).copy()
-
-    # Calcul de la durée en jours
     cleaned["Durée (jours)"] = (cleaned["Fin"] - cleaned["Début"]).dt.days
 
-    # Séparer les courtes et longues sessions
     sessions_courtes = cleaned[cleaned["Durée (jours)"] <= 31]
     sessions_longues = cleaned[cleaned["Durée (jours)"] > 31]
 
-    # Créer les événements pour le calendrier
     events = []
     for _, row in sessions_courtes.iterrows():
         try:
             organisme = row.get("Organisme de formation", "").strip()
             lieu = row.get("Lieu de formation", "").strip()
-            
+
             event_title = f"{row['Nom de la formation']}"
             if organisme:
                 event_title += f" - {organisme}"
             if lieu:
                 event_title += f" @ {lieu}"
-            
+
             events.append({
                 "title": event_title,
                 "start": row["Début"].strftime("%Y-%m-%dT%H:%M:%S"),
@@ -46,7 +43,6 @@ def show_calendar():
         except Exception as e:
             st.warning(f"Une session a été ignorée (problème de données) : {e}")
 
-    # Options du calendrier
     options = {
         "locale": "fr",
         "firstDay": 1,
@@ -68,13 +64,11 @@ def show_calendar():
         }
     }
 
-    # Affichage du calendrier
     if not events:
         st.info("Aucune session de moins d’un mois à afficher dans le calendrier.")
     else:
         calendar(events=events, options=options)
 
-    # Affichage des sessions longues en bas
     if not sessions_longues.empty:
         st.subheader("📚 Formations longues (durée > 1 mois)")
         st.dataframe(
